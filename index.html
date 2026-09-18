@@ -118,29 +118,50 @@
   }
   .masthead .lede strong{color:var(--ink); font-weight:600;}
 
-  /* ---------- Layout: nav + main ---------- */
-  .layout{display:grid; grid-template-columns:220px 1fr; gap:48px; margin-top:40px;}
-  @media (max-width:860px){ .layout{grid-template-columns:1fr;} }
-
-  nav.toc{
-    position:sticky; top:24px; align-self:start;
-    padding:18px 0;
-    display:flex; flex-direction:column; gap:2px;
-  }
-  nav.toc .toc-label{
+  /* ---------- Layout: top tab bar + main ---------- */
+  .layout{margin-top:36px;}
+  .toc-label{
     font-family:"IBM Plex Mono", monospace; font-size:11.5px; letter-spacing:.08em;
-    text-transform:uppercase; color:var(--ink-faint); margin-bottom:8px;
+    text-transform:uppercase; color:var(--ink-faint); margin-bottom:10px;
+  }
+  .tabbar-wrap{
+    border-bottom:1px solid var(--sand-line);
+    position:sticky; top:0; z-index:5;
+    background:var(--paper);
+    padding-top:2px;
+  }
+  nav.toc{
+    display:flex; gap:3px;
+    padding:0 2px;
   }
   nav.toc a{
-    display:flex; align-items:baseline; gap:10px;
+    flex:1 1 0; min-width:0;
+    display:flex; align-items:baseline; gap:6px;
     text-decoration:none; color:var(--ink-soft);
-    padding:7px 10px; border-radius:7px;
-    font-size:.92rem;
-    border-left:2px solid transparent;
+    padding:12px 10px 10px;
+    font-size:.9rem;
+    background:transparent;
+    border:1px solid transparent;
+    border-bottom:2px solid transparent;
+    border-radius:10px 10px 0 0;
+    overflow:hidden;
   }
-  nav.toc a .n{font-family:"IBM Plex Mono", monospace; color:var(--teal-deep); font-size:.82em;}
+  nav.toc a .n{font-family:"IBM Plex Mono", monospace; color:var(--teal-deep); font-size:.82em; flex:none;}
+  nav.toc a .lbl{overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0;}
   nav.toc a:hover{background:var(--sand); color:var(--ink);}
-  @media (max-width:860px){ nav.toc{position:static; display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:4px;} }
+  nav.toc a[role="tab"]{cursor:pointer;}
+  nav.toc a.active{
+    background:var(--paper-raised); color:var(--ink); font-weight:600;
+    border-color:var(--sand-line);
+    border-bottom:2px solid var(--teal);
+  }
+  nav.toc a.active .n{color:var(--teal-deep);}
+  main{padding-top:24px;}
+
+  @media (max-width:620px){
+    nav.toc a{padding:10px 4px 8px; font-size:.78rem; gap:0;}
+    nav.toc a .lbl{display:none;}
+  }
 
   main{min-width:0;}
 
@@ -174,6 +195,20 @@
     white-space:nowrap;
   }
   .labo-body{padding:30px 34px 36px; display:flex; flex-direction:column; gap:28px;}
+
+  .labo.is-hidden{display:none;}
+
+  .labo-pager{
+    display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap;
+    margin-top:8px; padding-top:20px; border-top:1px solid var(--sand-line);
+  }
+  .pager-btn{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.02em;
+    background:var(--sand); border:1px solid var(--sand-line); color:var(--ink-soft);
+    padding:10px 16px; border-radius:8px; cursor:pointer; text-decoration:none;
+  }
+  .pager-btn:hover{background:var(--teal-pale); color:var(--teal-deep); border-color:color-mix(in srgb, var(--teal) 35%, var(--sand-line));}
 
   .protocol-frame{
     border:1px solid var(--sand-line); border-radius:10px;
@@ -290,10 +325,12 @@
   .i-text-deep{font-family:"IBM Plex Mono",monospace; font-size:9.5px; fill:var(--teal-deep); font-weight:600;}
 
   @media print{
-    nav.toc{display:none;}
-    .layout{grid-template-columns:1fr; display:block;}
+    .toc-label{display:none;}
+    .tabbar-wrap{display:none;}
     .labo{break-inside:avoid; page-break-before:always; box-shadow:none;}
+    .labo.is-hidden{display:block !important;}
     .labo:first-of-type{page-break-before:auto;}
+    .labo-pager{display:none;}
     body{background:#fff;}
   }
   @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
@@ -308,19 +345,21 @@
   </header>
 
   <div class="layout">
-    <nav class="toc" aria-label="Table des matières">
-      <div class="toc-label">Laboratoires</div>
-      <a href="#labo1"><span class="n">01</span> Préparation des milieux</a>
-      <a href="#labo2"><span class="n">02</span> Ensemencement</a>
-      <a href="#labo3"><span class="n">03</span> Microscopie</a>
-      <a href="#labo4"><span class="n">04</span> Descriptions macro/micro</a>
-      <a href="#labo5"><span class="n">05</span> Mycètes des céréales</a>
-      <a href="#labo6"><span class="n">06</span> API et décomptes</a>
-      <a href="#labo7"><span class="n">07</span> Bactéries dans la viande</a>
-    </nav>
+    <div class="toc-label">Laboratoires</div>
+    <div class="tabbar-wrap">
+      <nav class="toc" role="tablist" aria-label="Table des matières">
+        <a href="#labo1" id="tab-labo1" role="tab" aria-controls="labo1" aria-selected="true" class="active" aria-label="Laboratoire 01 — Préparation des milieux"><span class="n">01</span><span class="lbl">Préparation des milieux</span></a>
+        <a href="#labo2" id="tab-labo2" role="tab" aria-controls="labo2" aria-selected="false" aria-label="Laboratoire 02 — Ensemencement"><span class="n">02</span><span class="lbl">Ensemencement</span></a>
+        <a href="#labo3" id="tab-labo3" role="tab" aria-controls="labo3" aria-selected="false" aria-label="Laboratoire 03 — Microscopie"><span class="n">03</span><span class="lbl">Microscopie</span></a>
+        <a href="#labo4" id="tab-labo4" role="tab" aria-controls="labo4" aria-selected="false" aria-label="Laboratoire 04 — Descriptions macro/micro"><span class="n">04</span><span class="lbl">Descriptions macro/micro</span></a>
+        <a href="#labo5" id="tab-labo5" role="tab" aria-controls="labo5" aria-selected="false" aria-label="Laboratoire 05 — Mycètes des céréales"><span class="n">05</span><span class="lbl">Mycètes des céréales</span></a>
+        <a href="#labo6" id="tab-labo6" role="tab" aria-controls="labo6" aria-selected="false" aria-label="Laboratoire 06 — API et décomptes"><span class="n">06</span><span class="lbl">API et décomptes</span></a>
+        <a href="#labo7" id="tab-labo7" role="tab" aria-controls="labo7" aria-selected="false" aria-label="Laboratoire 07 — Bactéries dans la viande"><span class="n">07</span><span class="lbl">Bactéries dans la viande</span></a>
+      </nav>
+    </div>
 
     <main id="main-content">
-      <section class="labo" id="labo1">
+      <section class="labo" id="labo1" role="tabpanel" aria-labelledby="tab-labo1" tabindex="-1">
         <div class="labo-head">
           <div class="titling">
             <div class="labo-num">Laboratoire 01</div>
@@ -456,10 +495,15 @@
             <p class="soft">Le bouchon dévissé d'un quart de tour laisse la vapeur pénétrer et atteindre tout le liquide (un bouchon fermé emprisonnerait de l'air et empêcherait une stérilisation uniforme) ; le papier d'aluminium par-dessus empêche les poussières et microorganismes de l'air de retomber dans le goulot pendant et après le traitement, tout en laissant la vapeur circuler.</p>
           </div>
 
+          <div class="labo-pager">
+            <div></div>
+            <div><a href="#labo2" class="pager-btn" data-nav="next">Labo 02 — Ensemencement →</a></div>
+          </div>
+
         </div>
       </section>
 
-      <section class="labo" id="labo2">
+      <section class="labo is-hidden" id="labo2" role="tabpanel" aria-labelledby="tab-labo2" tabindex="-1">
         <div class="labo-head">
           <div class="titling">
             <div class="labo-num">Laboratoire 02</div>
@@ -570,10 +614,15 @@
             </div>
           </div>
 
+          <div class="labo-pager">
+            <div><a href="#labo1" class="pager-btn" data-nav="prev">← Labo 01 — Préparation des milieux</a></div>
+            <div><a href="#labo3" class="pager-btn" data-nav="next">Labo 03 — Microscopie →</a></div>
+          </div>
+
         </div>
       </section>
 
-      <section class="labo" id="labo3">
+      <section class="labo is-hidden" id="labo3" role="tabpanel" aria-labelledby="tab-labo3" tabindex="-1">
         <div class="labo-head">
           <div class="titling">
             <div class="labo-num">Laboratoire 03</div>
@@ -672,10 +721,15 @@
             <p>Le protocole a un ordre précis, mais il repose sur une logique simple qu'il vaut mieux comprendre que mémoriser par cœur : on allume la lumière et on <strong>remonte la platine au maximum avant même de déposer la lame</strong>, pour ne jamais risquer d'écraser une lame contre l'objectif en la découvrant. On dépose ensuite la préparation, puis on fait la toute première mise au point en <strong>descendant</strong> lentement la platine (vis macrométrique, objectif 4X) — on part donc de trop près et on s'éloigne prudemment vers le point net, plutôt que l'inverse. On centre au chariot mobile, puis on ajuste le diaphragme et le condensateur pour le contraste. Cette même logique de prudence (large plage de sécurité, puis ajustement fin) revient à chaque changement d'objectif.</p>
           </div>
 
+          <div class="labo-pager">
+            <div><a href="#labo2" class="pager-btn" data-nav="prev">← Labo 02 — Ensemencement</a></div>
+            <div><a href="#labo4" class="pager-btn" data-nav="next">Labo 04 — Descriptions macro/micro →</a></div>
+          </div>
+
         </div>
       </section>
 
-      <section class="labo" id="labo4">
+      <section class="labo is-hidden" id="labo4" role="tabpanel" aria-labelledby="tab-labo4" tabindex="-1">
         <div class="labo-head">
           <div class="titling">
             <div class="labo-num">Laboratoire 04</div>
@@ -757,10 +811,15 @@
             <p>Pour les moisissures, décrivez surtout leurs <strong>structures reproductrices</strong> (les spores, portées par le mycélium) plutôt que le mycélium lui-même — elles se voient mieux à G=100X. Pour les levures, c'est la <strong>forme des cellules</strong> et leur contenu qui comptent, mieux visibles à G=400X. Les deux groupes sont des champignons (mycètes), mais leur mode de croissance — filamenteux pour l'un, cellule par cellule pour l'autre — change complètement ce qu'il faut chercher au microscope.</p>
           </div>
 
+          <div class="labo-pager">
+            <div><a href="#labo3" class="pager-btn" data-nav="prev">← Labo 03 — Microscopie</a></div>
+            <div><a href="#labo5" class="pager-btn" data-nav="next">Labo 05 — Mycètes des céréales →</a></div>
+          </div>
+
         </div>
       </section>
 
-      <section class="labo" id="labo5">
+      <section class="labo is-hidden" id="labo5" role="tabpanel" aria-labelledby="tab-labo5" tabindex="-1">
         <div class="labo-head">
           <div class="titling">
             <div class="labo-num">Laboratoire 05</div>
@@ -872,10 +931,15 @@
             <p>Comme tout microorganisme, une moisissure a besoin de conditions favorables pour s'installer et se multiplier dans un aliment. Les facteurs les plus déterminants sont l'<strong>humidité</strong> (une eau facilement disponible dans l'aliment — ce qu'on appelle l'activité de l'eau — favorise nettement la germination des spores), la <strong>présence d'oxygène</strong> (la grande majorité des moisissures sont aérobies strictes : elles ne poussent qu'en surface ou dans un emballage mal scellé), une <strong>température modérée et une durée d'entreposage prolongée</strong>, et des <strong>nutriments organiques</strong> facilement accessibles, comme l'amidon et les sucres présents dans des céréales. Un aliment entreposé humide, à l'air libre et à température ambiante réunit à peu près toutes ces conditions à la fois — ce qui explique pourquoi le contrôle de l'humidité et de l'emballage est une des premières lignes de défense contre les moisissures en industrie alimentaire.</p>
           </div>
 
+          <div class="labo-pager">
+            <div><a href="#labo4" class="pager-btn" data-nav="prev">← Labo 04 — Descriptions macro/micro</a></div>
+            <div><a href="#labo6" class="pager-btn" data-nav="next">Labo 06 — API et décomptes →</a></div>
+          </div>
+
         </div>
       </section>
 
-      <section class="labo" id="labo6">
+      <section class="labo is-hidden" id="labo6" role="tabpanel" aria-labelledby="tab-labo6" tabindex="-1">
         <div class="labo-head">
           <div class="titling">
             <div class="labo-num">Laboratoire 06</div>
@@ -982,10 +1046,15 @@
             </div>
           </div>
 
+          <div class="labo-pager">
+            <div><a href="#labo5" class="pager-btn" data-nav="prev">← Labo 05 — Mycètes des céréales</a></div>
+            <div><a href="#labo7" class="pager-btn" data-nav="next">Labo 07 — Bactéries dans la viande →</a></div>
+          </div>
+
         </div>
       </section>
 
-      <section class="labo" id="labo7">
+      <section class="labo is-hidden" id="labo7" role="tabpanel" aria-labelledby="tab-labo7" tabindex="-1">
         <div class="labo-head">
           <div class="titling">
             <div class="labo-num">Laboratoire 07</div>
@@ -1034,6 +1103,11 @@
             <p>C'est précisément ce type de décompte — flore aérobie mésophile totale, en CFU/g — que les normes du MAPAQ et de la DGPS encadrent avec des seuils acceptables pour les produits alimentaires commerciaux. Ce laboratoire est un peu un point d'arrivée : il combine les techniques de dilution et d'ensemencement pratiquées depuis le labo 5 avec la question de fond qui traverse tout le cours — à partir de quel niveau un aliment est-il considéré comme compromis ?</p>
           </div>
 
+          <div class="labo-pager">
+            <div><a href="#labo6" class="pager-btn" data-nav="prev">← Labo 06 — API et décomptes</a></div>
+            <div></div>
+          </div>
+
         </div>
       </section>
       <footer class="colophon">
@@ -1043,3 +1117,52 @@
     </main>
   </div>
 </div>
+
+<script>
+(function(){
+  var labs = Array.prototype.slice.call(document.querySelectorAll('section.labo'));
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('nav.toc a[role="tab"]'));
+  if(!labs.length || !tabs.length) return;
+
+  function idFromHash(){
+    var h = (location.hash || '').replace('#','');
+    return labs.some(function(l){ return l.id === h; }) ? h : labs[0].id;
+  }
+
+  function activate(id, opts){
+    opts = opts || {};
+    labs.forEach(function(l){ l.classList.toggle('is-hidden', l.id !== id); });
+    tabs.forEach(function(t){
+      var isActive = t.getAttribute('href') === '#' + id;
+      t.classList.toggle('active', isActive);
+      t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+    if(!opts.skipScroll){
+      var main = document.getElementById('main-content');
+      if(main && main.scrollIntoView) main.scrollIntoView({block:'start'});
+    }
+  }
+
+  tabs.forEach(function(t){
+    t.addEventListener('click', function(e){
+      e.preventDefault();
+      var id = t.getAttribute('href').slice(1);
+      history.replaceState(null, '', '#' + id);
+      activate(id);
+    });
+  });
+
+  document.querySelectorAll('.pager-btn[data-nav]').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      var id = btn.getAttribute('href').slice(1);
+      history.replaceState(null, '', '#' + id);
+      activate(id);
+    });
+  });
+
+  window.addEventListener('hashchange', function(){ activate(idFromHash()); });
+
+  activate(idFromHash(), {skipScroll:true});
+})();
+</script>
